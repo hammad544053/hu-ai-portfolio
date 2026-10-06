@@ -3,7 +3,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import timedelta
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -158,6 +158,12 @@ with app.app_context():
                    description="Multi-agent meta-reasoning setups, hyperparameter tuning, and efficient edge model conversion.")
         ])
     db.session.commit()
+
+
+# --- SERVE STATIC UPLOADS ON VERCEL & LOCAL ---
+@app.route('/static/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 
 # --- CONTACT EMAIL API ROUTE ---
