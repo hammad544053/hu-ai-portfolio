@@ -116,14 +116,24 @@ def allowed_file(filename):
 with app.app_context():
     db.create_all()
 
+    # ---------------------------------------------------------------------------
+    # ADMIN CREDENTIALS CONFIGURATION (READ FROM .ENV ENVIRONMENT VARIABLES)
+    # To change your admin login, simply update ADMIN_USERNAME and ADMIN_PASSWORD inside .env
+    # ---------------------------------------------------------------------------
     admin_user = os.environ.get('ADMIN_USERNAME', 'admin')
     admin_pass = os.environ.get('ADMIN_PASSWORD', 'hammad12345')
+    # ---------------------------------------------------------------------------
 
     admin_obj = Admin.query.filter_by(username=admin_user).first()
     if not admin_obj:
+        # Generate secure PBKDF2:SHA256 password hash
         hashed_pwd = generate_password_hash(admin_pass, method='pbkdf2:sha256')
         admin_obj = Admin(username=admin_user, password_hash=hashed_pwd)
         db.session.add(admin_obj)
+    else:
+        # Auto-update database hash if password changed in .env
+        if not check_password_hash(admin_obj.password_hash, admin_pass):
+            admin_obj.password_hash = generate_password_hash(admin_pass, method='pbkdf2:sha256')
 
     if not SiteConfig.query.first():
         config = SiteConfig()
