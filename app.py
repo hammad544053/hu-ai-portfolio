@@ -16,26 +16,42 @@ try:
 except ImportError:
     pass
 
-app = Flask(__name__)
+# Detect Vercel serverless execution environment
+IS_VERCEL = os.environ.get('VERCEL') == '1'
+
+if IS_VERCEL:
+    # Use writable /tmp directory in serverless environment
+    db_path = '/tmp/portfolio.db'
+    upload_path = '/tmp/uploads'
+    instance_path = '/tmp/instance'
+else:
+    # Local development paths
+    base_dir = os.path.abspath(os.path.dirname(__file__))
+    db_path = os.path.join(base_dir, 'portfolio.db')
+    upload_path = os.path.join(base_dir, 'static', 'uploads')
+    instance_path = os.path.join(base_dir, 'instance')
+
+os.makedirs(instance_path, exist_ok=True)
+os.makedirs(upload_path, exist_ok=True)
+
+app = Flask(__name__, instance_path=instance_path)
 
 # Security & Vercel deployment variables
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'hammad_ultra_secure_portfolio_key_2026')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///portfolio.db')
-app.config['UPLOAD_FOLDER'] = 'static/uploads'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', f'sqlite:///{db_path}')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['UPLOAD_FOLDER'] = upload_path
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'webp'}
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=30)
 
 # Email Configuration pulled securely from Environment Variables
 MAIL_USERNAME = os.environ.get('MAIL_USERNAME', 'hk0448455@gmail.com').strip()
-# Strips whitespace or spaces if copied directly from Google Security Manager
 MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD', '1234567891011').replace(" ", "").strip()
 
 db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
-
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 
 # --- DATABASE MODELS ---
