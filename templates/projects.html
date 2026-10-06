@@ -1,0 +1,107 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ config.hero_name }} — Production Projects{% endblock %}
+
+{% block content %}
+<div class="section-container" style="padding-top: 160px; padding-bottom: 120px;">
+  <div class="page-header">
+<!--    <p class="eyebrow-orange">Portfolio</p>-->
+    <h1 class="page-title">Production <span class="serif-italic"> Deployments</span></h1>
+  </div>
+
+  <!-- 1. ML -->
+  <section class="project-category-section">
+    <h2 class="category-title">Machine Learning Projects</h2>
+    <div class="portfolio-grid">
+      {% for p in ml %}
+      <div class="portfolio-card">
+        <div class="card-image-wrap"><img src="{{ url_for('static', filename='uploads/' + p.image_filename) }}" alt="{{ p.title }}"></div>
+        <div class="card-content">
+          <h3 class="card-title">{{ p.title }}</h3>
+          <div class="card-actions">
+            {% if p.github_link %}<a href="{{ p.github_link }}" class="btn-pill-dark btn-card-action" target="_blank">GitHub</a>{% endif %}
+            {% if p.live_link %}<a href="{{ p.live_link }}" class="btn-orange btn-card-action" target="_blank">Live Test</a>{% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- 2. CV & DL -->
+  <section class="project-category-section">
+    <h2 class="category-title">Deep Learning & Computer Vision</h2>
+    <div class="portfolio-grid">
+      {% for p in cv %}
+      <div class="portfolio-card">
+        <div class="card-image-wrap"><img src="{{ url_for('static', filename='uploads/' + p.image_filename) }}" alt="{{ p.title }}"></div>
+        <div class="card-content">
+          <h3 class="card-title">{{ p.title }}</h3>
+          <div class="card-actions">
+            {% if p.github_link %}<a href="{{ p.github_link }}" class="btn-pill-dark btn-card-action" target="_blank">GitHub</a>{% endif %}
+            {% if p.live_link %}<a href="{{ p.live_link }}" class="btn-orange btn-card-action" target="_blank">Live Test</a>{% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- 3. NLP -->
+  <section class="project-category-section">
+    <h2 class="category-title">Natural Language Processing</h2>
+    <div class="portfolio-grid">
+      {% for p in nlp %}
+      <div class="portfolio-card">
+        <div class="card-image-wrap"><img src="{{ url_for('static', filename='uploads/' + p.image_filename) }}" alt="{{ p.title }}"></div>
+        <div class="card-content">
+          <h3 class="card-title">{{ p.title }}</h3>
+          <div class="card-actions">
+            {% if p.github_link %}<a href="{{ p.github_link }}" class="btn-pill-dark btn-card-action" target="_blank">GitHub</a>{% endif %}
+            {% if p.live_link %}<a href="{{ p.live_link }}" class="btn-orange btn-card-action" target="_blank">Live Test</a>{% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- 4. GenAI -->
+  <section class="project-category-section">
+    <h2 class="category-title">Generative AI</h2>
+    <div class="portfolio-grid">
+      {% for p in genai %}
+      <div class="portfolio-card">
+        <div class="card-image-wrap"><img src="{{ url_for('static', filename='uploads/' + p.image_filename) }}" alt="{{ p.title }}"></div>
+        <div class="card-content">
+          <h3 class="card-title">{{ p.title }}</h3>
+          <div class="card-actions">
+            {% if p.github_link %}<a href="{{ p.github_link }}" class="btn-pill-dark btn-card-action" target="_blank">GitHub</a>{% endif %}
+            {% if p.live_link %}<a href="{{ p.live_link }}" class="btn-orange btn-card-action" target="_blank">Live Test</a>{% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- 5. Agentic AI -->
+  <section class="project-category-section">
+    <h2 class="category-title">Agentic AI</h2>
+    <div class="portfolio-grid">
+      {% for p in agentic %}
+      <div class="portfolio-card">
+        <div class="card-image-wrap"><img src="{{ url_for('static', filename='uploads/' + p.image_filename) }}" alt="{{ p.title }}"></div>
+        <div class="card-content">
+          <h3 class="card-title">{{ p.title }}</h3>
+          <div class="card-actions">
+            {% if p.github_link %}<a href="{{ p.github_link }}" class="btn-pill-dark btn-card-action" target="_blank">GitHub</a>{% endif %}
+            {% if p.live_link %}<a href="{{ p.live_link }}" class="btn-orange btn-card-action" target="_blank">Live Test</a>{% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+
+{% block title %}About {{ config.hero_name }} — Expertise & Background{% endblock %}
+
+{% block content %}
+<section class="section-container" style="padding-top: 140px; padding-bottom: 100px;">
+  <p class="eyebrow-orange">About Me</p>
+  <h1 class="section-headline" style="margin-bottom: 24px;">
+    Engineering <span class="serif-italic">Intelligence</span>
+  </h1>
+
+  <!-- About Text Block (Constrained Width to avoid overlapping portrait image) -->
+  <div class="about-text-block">
+    <p>{{ config.about_text }}</p>
+  </div>
+
+  <!-- SECTION: EDUCATION -->
+  <div class="education-section" style="margin-top: 60px;">
+    <p class="eyebrow-orange">Academic Background</p>
+    <h2 style="font-size: 28px; font-weight: 800; margin-bottom: 20px; color: #ffffff;">Education</h2>
+
+    <div class="education-card">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+        <div>
+          <h3 style="font-size: 20px; font-weight: 700; color: #ffffff; margin-bottom: 4px;">BS in Computer Science</h3>
+          <p style="color: #ff5500; font-weight: 600; font-size: 15px;">Sarhad University of Science & Information Technology</p>
+        </div>
+        <span class="gpa-badge">3.5+ CGPA</span>
+      </div>
+      <p style="color: rgba(255, 255, 255, 0.75); font-size: 14px; line-height: 1.6; margin-top: 10px;">
+        Focused on advanced computing foundations, statistical modeling, machine learning algorithms, and intelligent software systems.
+      </p>
+    </div>
+  </div>
+
+  <!-- SECTION: CORE SUBJECTS COVERED -->
+  <div style="margin-top: 50px;">
+    <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 18px; color: #ffffff;">Core Subjects Covered During BS</h3>
+    <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+      <div class="subject-box">Intro to Data Science</div>
+      <div class="subject-box">Machine Learning</div>
+      <div class="subject-box">Artificial Intelligence</div>
+      <div class="subject-box">Deep Learning & Computer Vision</div>
+      <div class="subject-box">Natural Language Processing (NLP)</div>
+      <div class="subject-box">Generative AI</div>
+      <div class="subject-box">Agentic AI</div>
+    </div>
+  </div>
+
+  <!-- SECTION: CORE TECHNOLOGIES & STACK -->
+  {% if skills %}
+  <div style="margin-top: 60px;">
+    <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 20px; color: #ffffff;">Core Technologies & Stack</h2>
+    <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+      {% for skill in skills %}
+      <div class="skill-pill">
+        {{ skill.name }}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

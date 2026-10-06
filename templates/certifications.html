@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ config.hero_name }} — Certifications{% endblock %}
+
+{% block content %}
+<div class="section-container" style="padding-top: 160px; padding-bottom: 120px;">
+  <div class="page-header">
+    <p class="eyebrow-orange">Verified</p>
+    <h1 class="page-title">Expert <span class="serif-italic">Credentials</span></h1>
+  </div>
+  <section class="project-category-section">
+    <div class="cert-grid portfolio-grid">
+      {% for cert in certs %}
+      <div class="portfolio-card cert-card">
+        <div class="card-image-wrap"><img src="{{ url_for('static', filename='uploads/' + cert.image_filename) }}" alt="{{ cert.title }}"></div>
+        <div class="card-content"><h3 class="card-title" style="margin-bottom:0;">{{ cert.title }}</h3></div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

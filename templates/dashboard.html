@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HU.AI — Modern Admin Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="dashboard-body">
+  <!-- Fixed Background Container for Dashboard -->
+  <div class="dash-bg-overlay"></div>
+  <div class="canvas-container"><canvas id="animation-canvas"></canvas></div>
+
+  <!-- Dashboard Header Navigation -->
+  <header class="dash-header">
+    <a href="{{ url_for('index') }}" class="logo">{{ config.site_title }} <span class="dash-badge">ADMIN</span></a>
+    <nav id="main-nav">
+      <ul class="nav-links">
+        <li><a href="{{ url_for('index') }}" target="_blank">Home Site ↗</a></li>
+        <li><a href="{{ url_for('about') }}" target="_blank">About ↗</a></li>
+        <li><a href="{{ url_for('projects') }}" target="_blank">Projects ↗</a></li>
+        <li><a href="{{ url_for('certifications') }}" target="_blank">Certifications ↗</a></li>
+      </ul>
+      <a href="{{ url_for('logout') }}" class="btn-dash-logout">Logout</a>
+    </nav>
+
+    <button class="hamburger" id="hamburger-btn" aria-label="Toggle Menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </header>
+
+  <!-- Mobile Drawer Overlay -->
+  <div class="mobile-drawer" id="mobile-drawer">
+    <button class="drawer-close-btn" id="drawer-close-btn" aria-label="Close Menu">✕</button>
+    <a href="{{ url_for('index') }}" target="_blank">Home Site</a>
+    <a href="{{ url_for('about') }}" target="_blank">About</a>
+    <a href="{{ url_for('projects') }}" target="_blank">Projects</a>
+    <a href="{{ url_for('certifications') }}" target="_blank">Certifications</a>
+    <a href="{{ url_for('logout') }}" class="btn-orange">Logout</a>
+  </div>
+
+  <!-- Dashboard Content Container -->
+  <main class="dash-wrapper">
+    <div class="dash-header-banner">
+      <div>
+        <p class="eyebrow-orange">System Management</p>
+        <h1 class="dash-title">Control <span class="serif-italic">Center</span></h1>
+      </div>
+      <div style="display: flex; gap: 12px; align-items: center;">
+        <!-- UNDO BUTTON FORM -->
+        <form method="POST" action="#home-config" style="display:inline;">
+          <input type="hidden" name="action" value="undo_last_action">
+          <button type="submit" class="btn-undo">↩️ Undo Last Change</button>
+        </form>
+        <div class="dash-status-pill">● System Online</div>
+      </div>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="dash-alert-box">
+          <span class="dash-alert-icon">⚡</span>
+          <span>{{ messages[0] }}</span>
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- DASHBOARD NAVIGATION TABS / CATEGORIES -->
+    <div class="dash-nav-tabs">
+      <a href="#home-config" class="dash-tab active">🏠 Home Page Settings</a>
+      <a href="#about-config" class="dash-tab">👤 About Page Content</a>
+      <a href="#projects-config" class="dash-tab">💻 Projects Manager</a>
+      <a href="#certs-config" class="dash-tab">📜 Certifications & Skills</a>
+    </div>
+
+    <!-- ================= PAGE SECTION 1: HOME PAGE CONTENT ================= -->
+    <section id="home-config" class="dash-section-group">
+      <div class="dash-section-title">
+        <h2>Home Page Management</h2>
+        <p>Control hero section typography, metrics banner, and core competency pillars.</p>
+      </div>
+
+      <div class="dash-grid-2col">
+        <!-- Hero Configuration Card -->
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <h3>Hero Section Details</h3>
+            <span class="dash-card-tag">Home</span>
+          </div>
+          <form method="POST" action="#home-config">
+            <input type="hidden" name="action" value="update_config">
+            <div class="dash-form-group">
+              <label>Site Brand Logo / Title</label>
+              <input type="text" name="site_title" value="{{ config.site_title }}" required>
+            </div>
+            <div class="dash-form-group">
+              <label>Hero Headline Name</label>
+              <input type="text" name="hero_name" value="{{ config.hero_name }}" required>
+            </div>
+            <div class="dash-form-group">
+              <label>Hero Subtitle Text</label>
+              <textarea name="hero_subtitle" rows="4" required>{{ config.hero_subtitle }}</textarea>
+            </div>
+            <input type="hidden" name="about_text" value="{{ config.about_text }}">
+            <button type="submit" class="btn-orange btn-dash-action">Save Home Hero Config</button>
+          </form>
+        </div>
+
+        <!-- Impact Metrics Card -->
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <h3>Impact Metrics Strip</h3>
+            <span class="dash-card-tag">Home</span>
+          </div>
+          <form method="POST" action="#home-config">
+            <input type="hidden" name="action" value="add_metric">
+            <div class="dash-form-group">
+              <label>Metric Value (e.g. "3.5+ CGPA", "1st Position")</label>
+              <input type="text" name="value" placeholder="e.g. 1st Position" required>
+            </div>
+            <div class="dash-form-group">
+              <label>Metric Label (e.g. "Academic Honor")</label>
+              <input type="text" name="label" placeholder="e.g. FYP 2026 Winner" required>
+            </div>
+            <button type="submit" class="btn-orange btn-dash-action">+ Add Metric Card</button>
+          </form>
+
+          <div class="dash-list-wrapper">
+            <h4>Active Metrics</h4>
+            {% for m in metrics %}
+            <div class="item-card-wrapper">
+              <div class="item-row">
+                <div class="item-info">
+                  <span class="item-primary">{{ m.value }}</span>
+                  <span class="item-secondary">{{ m.label }}</span>
+                </div>
+                <div class="item-actions">
+                  <button type="button" class="btn-edit" onclick="toggleEdit('edit-metric-{{ m.id }}')">✏️ Edit</button>
+                  <form method="POST" action="#home-config" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this metric?');">
+                    <input type="hidden" name="action" value="delete_metric">
+                    <input type="hidden" name="id" value="{{ m.id }}">
+                    <button type="submit" class="btn-danger">Delete</button>
+                  </form>
+                </div>
+              </div>
+
+              <!-- EDIT INLINE DRAWER FOR METRIC -->
+              <div id="edit-metric-{{ m.id }}" class="dash-edit-drawer" style="display:none;">
+                <form method="POST" action="#home-config">
+                  <input type="hidden" name="action" value="edit_metric">
+                  <input type="hidden" name="id" value="{{ m.id }}">
+                  <div class="dash-form-group">
+                    <label>Edit Metric Value</label>
+                    <input type="text" name="value" value="{{ m.value }}" required>
+                  </div>
+                  <div class="dash-form-group">
+                    <label>Edit Metric Label</label>
+                    <input type="text" name="label" value="{{ m.label }}" required>
+                  </div>
+                  <div class="edit-drawer-buttons">
+                    <button type="submit" class="btn-orange btn-small">Save Changes</button>
+                    <button type="button" class="btn-secondary btn-small" onclick="toggleEdit('edit-metric-{{ m.id }}')">Cancel</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Engineering Pillars Section -->
+      <div class="dash-card full-width-card">
+        <div class="dash-card-header">
+          <h3>Engineering Pillars & Competencies</h3>
+          <span class="dash-card-tag">Home</span>
+        </div>
+        <form method="POST" action="#home-config" enctype="multipart/form-data" class="dash-form-grid">
+          <input type="hidden" name="action" value="add_pillar">
+          <div class="dash-form-group">
+            <label>Pillar Title</label>
+            <input type="text" name="title" placeholder="e.g. Generative AI & Fine-Tuning" required>
+          </div>
+          <div class="dash-form-group">
+            <label>Feature Graphic / Screenshot</label>
+            <input type="file" name="image" accept="image/*" class="file-input-custom">
+          </div>
+          <div class="dash-form-group span-2-col">
+            <label>Pillar Description</label>
+            <textarea name="description" rows="3" placeholder="Brief explanation of technical workflow..." required></textarea>
+          </div>
+          <div class="span-2-col">
+            <button type="submit" class="btn-orange btn-dash-action">+ Add Engineering Pillar</button>
+          </div>
+        </form>
+
+        <div class="dash-list-wrapper">
+          <h4>Configured Pillars</h4>
+          <div class="dash-items-grid">
+            {% for p in pillars %}
+            <div class="item-card-wrapper">
+              <div class="item-row">
+                <div class="item-info">
+                  <span class="item-primary">{{ p.title }}</span>
+                  <span class="item-secondary">{% if p.image_filename %}📸 Graphic Attached{% else %}📝 Text Card{% endif %}</span>
+                </div>
+                <div class="item-actions">
+                  <button type="button" class="btn-edit" onclick="toggleEdit('edit-pillar-{{ p.id }}')">✏️ Edit</button>
+                  <form method="POST" action="#home-config" style="display:inline;" onsubmit="return confirm('Delete this pillar? You can undo this immediately using the Undo button above.');">
+                    <input type="hidden" name="action" value="delete_pillar">
+                    <input type="hidden" name="id" value="{{ p.id }}">
+                    <button type="submit" class="btn-danger">Delete</button>
+                  </form>
+                </div>
+              </div>
+
+              <!-- EDIT INLINE DRAWER FOR PILLAR -->
+              <div id="edit-pillar-{{ p.id }}" class="dash-edit-drawer" style="display:none;">
+                <form method="POST" action="#home-config" enctype="multipart/form-data">
+                  <input type="hidden" name="action" value="edit_pillar">
+                  <input type="hidden" name="id" value="{{ p.id }}">
+                  <div class="dash-form-group">
+                    <label>Edit Title</label>
+                    <input type="text" name="title" value="{{ p.title }}" required>
+                  </div>
+                  <div class="dash-form-group">
+                    <label>Update Graphic/Screenshot (Optional)</label>
+                    <input type="file" name="image" accept="image/*" class="file-input-custom">
+                  </div>
+                  <div class="dash-form-group">
+                    <label>Edit Description</label>
+                    <textarea name="description" rows="3" required>{{ p.description }}</textarea>
+                  </div>
+                  <div class="edit-drawer-buttons">
+                    <button type="submit" class="btn-orange btn-small">Update Pillar</button>
+                    <button type="button" class="btn-secondary btn-small" onclick="toggleEdit('edit-pillar-{{ p.id }}')">Cancel</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PAGE SECTION 2: ABOUT PAGE CONTENT ================= -->
+    <section id="about-config" class="dash-section-group">
+      <div class="dash-section-title">
+        <h2>About Page Management</h2>
+        <p>Update bio summary, academic details, and core subject areas.</p>
+      </div>
+
+      <div class="dash-card full-width-card">
+        <div class="dash-card-header">
+          <h3>About Page Bio & Narrative</h3>
+          <span class="dash-card-tag">About</span>
+        </div>
+        <form method="POST" action="#about-config">
+          <input type="hidden" name="action" value="update_config">
+          <input type="hidden" name="site_title" value="{{ config.site_title }}">
+          <input type="hidden" name="hero_name" value="{{ config.hero_name }}">
+          <input type="hidden" name="hero_subtitle" value="{{ config.hero_subtitle }}">
+          <div class="dash-form-group">
+            <label>Biography Overview Text (Appears inside glassmorphic card on About Page)</label>
+            <textarea name="about_text" rows="5" required>{{ config.about_text }}</textarea>
+          </div>
+          <button type="submit" class="btn-orange btn-dash-action">Update Bio Narrative</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ================= PAGE SECTION 3: PROJECTS PAGE CONTENT ================= -->
+    <section id="projects-config" class="dash-section-group">
+      <div class="dash-section-title">
+        <h2>Projects Manager</h2>
+        <p>Upload new portfolio items categorized into specialized AI domains.</p>
+      </div>
+
+      <div class="dash-card full-width-card">
+        <div class="dash-card-header">
+          <h3>Upload & Showcase Project</h3>
+          <span class="dash-card-tag">Projects</span>
+        </div>
+        <form method="POST" action="#projects-config" enctype="multipart/form-data" class="dash-form-grid">
+          <input type="hidden" name="action" value="add_project">
+          <div class="dash-form-group">
+            <label>Project Title</label>
+            <input type="text" name="title" placeholder="e.g. UlcerGuard AI Diagnostic" required>
+          </div>
+          <div class="dash-form-group">
+            <label>Core Domain / Category</label>
+            <select name="category" required class="dash-select">
+              <option value="ml">Machine Learning (ML)</option>
+              <option value="cv">Deep Learning & Computer Vision (DL & CV)</option>
+              <option value="nlp">Natural Language Processing (NLP)</option>
+              <option value="genai">Generative AI</option>
+              <option value="agentic">Agentic AI</option>
+            </select>
+          </div>
+          <div class="dash-form-group">
+            <label>GitHub Repository URL</label>
+            <input type="url" name="github_link" placeholder="https://github.com/...">
+          </div>
+          <div class="dash-form-group">
+            <label>Live Demo / Deployment URL</label>
+            <input type="url" name="live_link" placeholder="https://...">
+          </div>
+          <div class="dash-form-group span-2-col">
+            <label>Cover Graphic Image</label>
+            <input type="file" name="image" accept="image/*" class="file-input-custom" required>
+          </div>
+          <div class="span-2-col">
+            <button type="submit" class="btn-orange btn-dash-action">+ Upload Project</button>
+          </div>
+        </form>
+
+        <div class="dash-list-wrapper">
+          <h4>Published Portfolio Projects</h4>
+          <div class="dash-items-grid">
+            {% for p in projects %}
+            <div class="item-card-wrapper">
+              <div class="item-row">
+                <div class="item-info">
+                  <span class="item-badge">{{ p.category|upper }}</span>
+                  <span class="item-primary">{{ p.title }}</span>
+                </div>
+                <div class="item-actions">
+                  <button type="button" class="btn-edit" onclick="toggleEdit('edit-project-{{ p.id }}')">✏️ Edit</button>
+                  <form method="POST" action="#projects-config" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this project?');">
+                    <input type="hidden" name="action" value="delete_project">
+                    <input type="hidden" name="id" value="{{ p.id }}">
+                    <button type="submit" class="btn-danger">Delete</button>
+                  </form>
+                </div>
+              </div>
+
+              <!-- EDIT INLINE DRAWER FOR PROJECT -->
+              <div id="edit-project-{{ p.id }}" class="dash-edit-drawer" style="display:none;">
+                <form method="POST" action="#projects-config" enctype="multipart/form-data">
+                  <input type="hidden" name="action" value="edit_project">
+                  <input type="hidden" name="id" value="{{ p.id }}">
+                  <div class="dash-form-group">
+                    <label>Edit Title</label>
+                    <input type="text" name="title" value="{{ p.title }}" required>
+                  </div>
+                  <div class="dash-form-group">
+                    <label>Edit Category</label>
+                    <select name="category" required class="dash-select">
+                      <option value="ml" {% if p.category == 'ml' %}selected{% endif %}>Machine Learning (ML)</option>
+                      <option value="cv" {% if p.category == 'cv' %}selected{% endif %}>Deep Learning & Computer Vision</option>
+                      <option value="nlp" {% if p.category == 'nlp' %}selected{% endif %}>Natural Language Processing</option>
+                      <option value="genai" {% if p.category == 'genai' %}selected{% endif %}>Generative AI</option>
+                      <option value="agentic" {% if p.category == 'agentic' %}selected{% endif %}>Agentic AI</option>
+                    </select>
+                  </div>
+                  <div class="dash-form-group">
+                    <label>Edit GitHub Link</label>
+                    <input type="url" name="github_link" value="{{ p.github_link or '' }}">
+                  </div>
+                  <div class="dash-form-group">
+                    <label>Edit Live Demo Link</label>
+                    <input type="url" name="live_link" value="{{ p.live_link or '' }}">
+                  </div>
+                  <div class="dash-form-group">
+                    <label>Replace Cover Graphic (Optional)</label>
+                    <input type="file" name="image" accept="image/*" class="file-input-custom">
+                  </div>
+                  <div class="edit-drawer-buttons">
+                    <button type="submit" class="btn-orange btn-small">Update Project</button>
+                    <button type="button" class="btn-secondary btn-small" onclick="toggleEdit('edit-project-{{ p.id }}')">Cancel</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PAGE SECTION 4: CERTIFICATIONS & SKILLS ================= -->
+    <section id="certs-config" class="dash-section-group">
+      <div class="dash-section-title">
+        <h2>Certifications & Technical Stack</h2>
+        <p>Manage verified credentials and tech stack pills displayed across pages.</p>
+      </div>
+
+      <div class="dash-grid-2col">
+        <!-- Certifications Card -->
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <h3>Upload Certification</h3>
+            <span class="dash-card-tag">Certifications</span>
+          </div>
+          <form method="POST" action="#certs-config" enctype="multipart/form-data">
+            <input type="hidden" name="action" value="add_cert">
+            <div class="dash-form-group">
+              <label>Certification Title</label>
+              <input type="text" name="title" placeholder="e.g. Deep Learning Specialization" required>
+            </div>
+            <div class="dash-form-group">
+              <label>Certificate Image / Badge</label>
+              <input type="file" name="image" accept="image/*" class="file-input-custom" required>
+            </div>
+            <button type="submit" class="btn-orange btn-dash-action">+ Upload Certification</button>
+          </form>
+
+          <div class="dash-list-wrapper">
+            <h4>Active Certifications</h4>
+            {% for c in certs %}
+            <div class="item-card-wrapper">
+              <div class="item-row">
+                <span class="item-primary">{{ c.title }}</span>
+                <div class="item-actions">
+                  <button type="button" class="btn-edit" onclick="toggleEdit('edit-cert-{{ c.id }}')">✏️ Edit</button>
+                  <form method="POST" action="#certs-config" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this certification?');">
+                    <input type="hidden" name="action" value="delete_cert">
+                    <input type="hidden" name="id" value="{{ c.id }}">
+                    <button type="submit" class="btn-danger">Delete</button>
+                  </form>
+                </div>
+              </div>
+
+              <!-- EDIT INLINE DRAWER FOR CERTIFICATION -->
+              <div id="edit-cert-{{ c.id }}" class="dash-edit-drawer" style="display:none;">
+                <form method="POST" action="#certs-config" enctype="multipart/form-data">
+                  <input type="hidden" name="action" value="edit_cert">
+                  <input type="hidden" name="id" value="{{ c.id }}">
+                  <div class="dash-form-group">
+                    <label>Edit Title</label>
+                    <input type="text" name="title" value="{{ c.title }}" required>
+                  </div>
+                  <div class="dash-form-group">
+                    <label>Replace Certificate Image (Optional)</label>
+                    <input type="file" name="image" accept="image/*" class="file-input-custom">
+                  </div>
+                  <div class="edit-drawer-buttons">
+                    <button type="submit" class="btn-orange btn-small">Update Certification</button>
+                    <button type="button" class="btn-secondary btn-small" onclick="toggleEdit('edit-cert-{{ c.id }}')">Cancel</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Skills Card -->
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <h3>Technical Skills Stack</h3>
+            <span class="dash-card-tag">Skills</span>
+          </div>
+          <form method="POST" action="#certs-config">
+            <input type="hidden" name="action" value="add_skill">
+            <div class="dash-form-group">
+              <label>Skill or Framework Name</label>
+              <input type="text" name="skill_name" placeholder="e.g. PyTorch, OpenCV, Unsloth" required>
+            </div>
+            <button type="submit" class="btn-orange btn-dash-action">+ Add Skill Pill</button>
+          </form>
+
+          <div class="dash-list-wrapper">
+            <h4>Active Skill Stack</h4>
+            <div class="dash-skills-wrap">
+              {% for s in skills %}
+              <div class="dash-skill-pill">
+                <span>{{ s.name }}</span>
+                <button type="button" class="dash-pill-edit" onclick="toggleEdit('edit-skill-{{ s.id }}')">✏️</button>
+                <form method="POST" action="#certs-config" style="display:inline;">
+                  <input type="hidden" name="action" value="delete_skill">
+                  <input type="hidden" name="id" value="{{ s.id }}">
+                  <button type="submit" class="dash-pill-close">×</button>
+                </form>
+              </div>
+
+              <!-- EDIT INLINE DRAWER FOR SKILL -->
+              <div id="edit-skill-{{ s.id }}" class="dash-edit-drawer" style="display:none; width: 100%;">
+                <form method="POST" action="#certs-config">
+                  <input type="hidden" name="action" value="edit_skill">
+                  <input type="hidden" name="id" value="{{ s.id }}">
+                  <div class="dash-form-group">
+                    <label>Rename Skill</label>
+                    <input type="text" name="skill_name" value="{{ s.name }}" required>
+                  </div>
+                  <div class="edit-drawer-buttons">
+                    <button type="submit" class="btn-orange btn-small">Update</button>
+                    <button type="button" class="btn-secondary btn-small" onclick="toggleEdit('edit-skill-{{ s.id }}')">Cancel</button>
+                  </div>
+                </form>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+  <script>
+    // Toggle edit drawers
+    function toggleEdit(id) {
+      var el = document.getElementById(id);
+      if (el.style.display === "none" || el.style.display === "") {
+        el.style.display = "block";
+      } else {
+        el.style.display = "none";
+      }
+    }
+
+    // Preserve exact scroll position across reloads
+    document.addEventListener("DOMContentLoaded", function () {
+      var savedScroll = localStorage.getItem("dash_scroll_pos");
+      if (savedScroll !== null) {
+        window.scrollTo(0, parseInt(savedScroll));
+        localStorage.removeItem("dash_scroll_pos");
+      }
+    });
+
+    window.addEventListener("beforeunload", function () {
+      localStorage.setItem("dash_scroll_pos", window.scrollY);
+    });
+  </script>
+</body>
+</html>

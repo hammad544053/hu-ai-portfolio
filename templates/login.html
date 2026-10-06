@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>HU.AI — Secure Admin Access</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    .login-frame { min-height: 100vh; display: flex; justify-content: center; align-items: center; position: relative; z-index: 20; }
+    .login-card { background: rgba(10, 10, 10, 0.9); backdrop-filter: blur(15px); border: 1px solid #ff5500; border-radius: 20px; padding: 40px; text-align: center; width: 100%; max-width: 400px; box-shadow: 0 0 30px rgba(255, 85, 0, 0.2); }
+    .login-card input { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); padding: 14px; border-radius: 8px; color: #ffffff; width: 100%; margin-bottom: 16px; text-align: center; font-size: 15px; }
+    .login-card input:focus { border-color: #ff5500; outline: none; }
+    .flash-msg { color: #ff5500; font-size: 13px; margin-bottom: 15px; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="canvas-container"><canvas id="animation-canvas"></canvas></div>
+  <div class="login-frame section-container">
+    <div class="login-card">
+      <h1 class="logo" style="font-size:28px; margin-bottom: 20px;">HU<span style="color:#ff5500">.</span>SECURE</h1>
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}<p class="flash-msg">{{ messages[0] }}</p>{% endif %}
+      {% endwith %}
+      <form method="POST">
+        <input type="text" name="username" placeholder="Username (admin)" required autocomplete="off">
+        <input type="password" name="password" placeholder="Password (hammad12345)" required>
+        <button type="submit" class="btn-orange" style="width:100%; justify-content:center;">Authenticate</button>
+      </form>
+    </div>
+  </div>
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
